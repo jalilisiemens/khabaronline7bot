@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>فرم سفارش پیشرفته رستوران</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      direction: rtl;
+      background: #f8f8f8;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background: #28a745;
+      color: white;
+    }
+    input[type="number"] {
+      width: 60px;
+      padding: 5px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    textarea {
+      width: 100%;
+      resize: vertical;
+      font-size: 14px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      min-height: 60px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    #totalPrice {
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+      text-align: center;
+      margin-top: 15px;
+    }
+    .note-info {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      margin-top: 5px;
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    @media (max-width: 600px) {
+      th, td {
+        font-size: 12px;
+        padding: 6px;
+      }
+      input[type="number"] {
+        width: 50px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>فرم سفارش پیشرفته رستوران</h2>
+    <form id="orderForm">
+      <label for="name">نام مشتری:</label>
+      <input type="text" id="name" required />
+
+      <label for="phone">شماره تماس:</label>
+      <input type="text" id="phone" required />
+
+      <label>غذاهای اصلی:</label>
+      <table>
+        <thead>
+          <tr>
+            <th>نام غذا</th>
+            <th>قیمت (تومان)</th>
+            <th>تعداد</th>
+          </tr>
+        </thead>
+        <tbody id="mealsTableBody">
+          <!-- ردیف‌ها با جاوااسکریپت ساخته می‌شوند -->
+        </tbody>
+      </table>
+
+      <label>پیش‌غذاها:</label>
+      <table>
+        <thead>
+          <tr>
+            <th>نام پیش‌غذا</th>
+            <th>قیمت (تومان)</th>
+            <th>تعداد</th>
+          </tr>
+        </thead>
+        <tbody id="startersTableBody">
+        </tbody>
+      </table>
+
+      <label>نوشیدنی‌ها:</label>
+      <table>
+        <thead>
+          <tr>
+            <th>نام نوشیدنی</th>
+            <th>قیمت (تومان)</th>
+            <th>تعداد</th>
+          </tr>
+        </thead>
+        <tbody id="drinksTableBody">
+        </tbody>
+      </table>
+
+      <label for="note">توضیحات سفارش (اختیاری):</label>
+      <textarea id="note" placeholder="مثلاً بدون پیاز، کم نمک و ..."></textarea>
+
+      <div id="totalPrice">مبلغ نهایی: ۰ تومان</div>
+      <div class="note-info">
+        این مبلغ بدون احتساب مالیات و عوارض می‌باشد و در فاکتور صندوق لحاظ خواهد شد.
+      </div>
+
+      <button type="submit">ثبت سفارش</button>
+    </form>
+  </div>
+
+<script>
+  const botToken = "7572589691:AAF0zZhXiiEBuemT-QWS4kTGq-qLsQVCmog";
+  const chatId = "373588422"; // تغییر به chat_id عددی
+
+  const meals = [
+    { name: "پک ویژه دو نفره", price: 899000 },
+    { name: "پک کباب پیتزای سراش‌بست", price: 599000 },
+    { name: "پک ویژه دو نفره کباب سنگی", price: 755000 },
+    { name: "سینی برگر سراش‌بست", price: 672000 },
+    { name: "سینی خانوادگی سراش‌بست", price: 7500000 },
+    { name: "کباب لبنانی", price: 335000 },
+    { name: "کباب مصری", price: 570000 },
+    { name: "کباب تبریزی", price: 365000 },
+    { name: "کباب میکس سنگی", price: 395000 },
+    { name: "بال", price: 250000 },
+    { name: "کباب مخصوص سراش‌بست", price: 464000 },
+    { name: "ماهی قزل‌آلای سوخاری", price: 440000 },
+    { name: "ماهی قزل‌آلای کبابی بدون برنج", price: 440000 },
+    { name: "میگو سوخاری", price: 680000 },
+    { name: "سبزی‌پلو با ماهی", price: 245000 }
+  ];
+
+  const starters = [
+    { name: "سالاد شیرازی", price: 45000 },
+    { name: "زیتون پرورده", price: 65000 },
+    { name: "ماست موسیر", price: 40000 },
+    { name: "سوپ جو", price: 70000 }
+  ];
+
+  const drinks = [
+    { name: "نوشابه قوطی", price: 15000 },
+    { name: "دلستر شیشه‌ای", price: 18000 },
+    { name: "آب معدنی", price: 10000 },
+    { name: "دوغ محلی", price: 20000 }
+  ];
+
+  function createRow(item, index, type) {
+    return `
+      <tr>
+        <td>${item.name}</td>
+        <td>${item.price.toLocaleString()}</td>
+        <td>
+          <input type="number" min="0" value="0" data-type="${type}" data-index="${index}" />
+        </td>
+      </tr>
+    `;
+  }
+
+  function populateTables() {
+    document.getElementById("mealsTableBody").innerHTML = meals.map((item, i) => createRow(item, i, "meal")).join("");
+    document.getElementById("startersTableBody").innerHTML = starters.map((item, i) => createRow(item, i, "starter")).join("");
+    document.getElementById("drinksTableBody").innerHTML = drinks.map((item, i) => createRow(item, i, "drink")).join("");
+  }
+
+  function calculateTotal() {
+    let total = 0;
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+      const type = input.dataset.type;
+      const index = input.dataset.index;
+      const count = parseInt(input.value) || 0;
+      let price = 0;
+      if (type === "meal") price = meals[index].price;
+      else if (type === "starter") price = starters[index].price;
+      else if (type === "drink") price = drinks[index].price;
+      total += count * price;
+    });
+    document.getElementById("totalPrice").innerText = `مبلغ نهایی: ${total.toLocaleString()} تومان`;
+    return total;
+  }
+
+  populateTables();
+
+  document.getElementById("orderForm").addEventListener("input", e => {
+    if (e.target.type === "number") {
+      calculateTotal();
+    }
+  });
+
+  document.getElementById("orderForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const note = document.getElementById("note").value.trim();
+
+    function buildItemsList(items, typeName) {
+      const selectedItems = [];
+      items.forEach((item, i) => {
+        const input = document.querySelector(`input[data-type="${typeName}"][data-index="${i}"]`);
+        const qty = parseInt(input.value) || 0;
+        if (qty > 0) selectedItems.push(`${item.name} × ${qty}`);
+      });
+      return selectedItems.length > 0 ? selectedItems.join(", ") : "ندارد";
+    }
+
+    const mealsList = buildItemsList(meals, "meal");
+    const startersList = buildItemsList(starters, "starter");
+    const drinksList = buildItemsList(drinks, "drink");
+    const total = calculateTotal();
+
+    const message =
+      `🍽 سفارش جدید:\n` +
+      `👤 نام: ${name}\n` +
+      `📞 تلفن: ${phone}\n` +
+      `🍱 غذاهای اصلی: ${mealsList}\n` +
+      `🥗 پیش‌غذاها: ${startersList}\n` +
+      `🥤 نوشیدنی‌ها: ${drinksList}\n` +
+      `📝 توضیحات: ${note || '-'}\n` +
+      `💰 مبلغ نهایی: ${total.toLocaleString()} تومان`;
+
+    // روش GET با encodeURIComponent (مطمئن‌ترین روش)
+    const encodedMessage = encodeURIComponent(message);
+    const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
+
+    try {
+      const response = await fetch(url);
+      const result = await response.json();
+      
+      if (result.ok) {
+        alert("سفارش با موفقیت ثبت و به تلگرام ارسال شد!");
+        e.target.reset();
+        calculateTotal();
+      } else {
+        console.error("خطای تلگرام:", result);
+        alert(`خطا در ارسال پیام به تلگرام: ${result.description || 'خطای ناشناخته'}`);
+      }
+    } catch (error) {
+      console.error("خطای شبکه:", error);
+      alert("خطا در اتصال به سرور تلگرام. لطفاً اینترنت خود را بررسی کنید.");
+    }
+  });
+</script>
+</body>
+</html>
